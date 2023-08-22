@@ -1,0 +1,22 @@
+QLabel#LoginOrRegister{
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: aquamarine;
+}
+
+
+
+QLineEdit#login-input1 {
+
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+QLineEdit#login-input2 {
+
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
