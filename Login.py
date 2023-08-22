@@ -47,6 +47,7 @@ class LoginGui(QDialog):
         btn = QPushButton(self)
         btn.setText("登录")
         btn.resize(100, 40)
+        btn.setObjectName("btn1")
         # btn.move(250, 270)
         btn.clicked.connect(self.search_user)
 
@@ -73,10 +74,18 @@ class LoginGui(QDialog):
         btn_subtract.move(200, 0)
         btn_subtract.clicked.connect(self.minSubtract)
 
+        # 注册label
+        label_register = MyLabel()
+        label_register.setParent(self)
+        label_register.setText("注册")
+        label_register.resize(40, 20)
+        label_register.move(15, 170)
+        label_register.setObjectName("change_label")
+
         # 登录错误按钮对话框
         self.dialog = QDialog()
         label1 = QLabel(self.dialog)
-        label1.setText("登录失败")
+        label1.setObjectName("dialog_label")
         label1.move(40, 30)
         btn1 = QPushButton()
         btn1.setText("确定")
@@ -90,21 +99,36 @@ class LoginGui(QDialog):
         self.exec_()
 
     def search_user(self):
-        print("函数被调用")
-        account = self.findChild(QLineEdit, "login-input1").text()
-        password = self.findChild(QLineEdit, "login-input2").text()
-        user_dao = dao.UserDao.GetUserDao()
-        user = user_dao.select_one(account, password)
-        self.user = user
+        if self.findChild(QLabel, "change_label").text() == "注册":
+            print("登录函数函数被调用")
+            account = self.findChild(QLineEdit, "login-input1").text()
+            password = self.findChild(QLineEdit, "login-input2").text()
+            user_dao = dao.UserDao.GetUserDao()
+            user = user_dao.select_one(account, password)
+            self.user = user
 
-        if user is not None:
-            print("验证通过")
-            self.hide()
-            self.flag = 200
+            if user is not None:
+                print("验证通过")
+                self.hide()
+                self.flag = 200
+
+            else:
+                print("用户不存在")
+                self.dialog.findChild(QLabel, "dialog_label").setText("登录失败")
+                self.dialog.exec_()
 
         else:
-            print("用户不存在")
-            self.dialog.exec_()
+            print("注册函数被调用")
+            account = self.findChild(QLineEdit, "login-input1").text()
+            password = self.findChild(QLineEdit, "login-input2").text()
+            user_dao = dao.UserDao.GetUserDao()
+            row_count = user_dao.insert_one(account, password)
+            if row_count != 0:
+                self.dialog.findChild(QLabel, "dialog_label").setText("注册成功")
+                self.dialog.exec_()
+            else:
+                self.dialog.findChild(QLabel, "dialog_label").setText("注册失败")
+                self.dialog.exec_()
 
     def comfirm_msg(self):
         self.dialog.close()
@@ -139,3 +163,19 @@ class LoginGui(QDialog):
 
     def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
         self.flag_move = False
+
+
+class MyLabel(QLabel):
+    def __init__(self):
+        super().__init__()
+        self.flag = None
+
+    def mousePressEvent(self, ev: QtGui.QMouseEvent) -> None:
+        if self.text() == "注册":
+            self.setText("登录")
+            self.parent().findChild(QPushButton, "btn1").setText("注册")
+            self.flag = 1
+        else:
+            self.setText("注册")
+            self.parent().findChild(QPushButton, "btn1").setText("登录")
+            self.flag = 0

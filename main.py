@@ -36,6 +36,7 @@ if __name__ == '__main__':
         window.setWindowTitle("禅铲馋播放器")
         window.show()
         load_user_message(user, frame1.user)
+        print(frame1.user)
 
     # 进入事件循环
     sys.exit(app.exec_())
