@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import *
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import *
 from pyqt5_plugins.examplebuttonplugin import QtGui
 import dao.UserDao
@@ -12,6 +13,10 @@ class LoginGui(QDialog):
         super().__init__()
         self.flag = 0
         self.setObjectName("login-container")
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowOpacity(0.95)
+        self.flag_move = False
+        self.setMouseTracking(True)
         # 登录字样
         login_label = QLabel(self)
         login_label.setObjectName("LoginOrRegister")
@@ -53,6 +58,21 @@ class LoginGui(QDialog):
         lay_out.setWidget(2, QFormLayout.FieldRole, text_flied2)
         lay_out.setWidget(3, QFormLayout.FieldRole, btn)
 
+        # 边框按钮设置
+        btn_exit = QPushButton(self)
+        icon_exit = QIcon("static/pictrue/close-line.png")
+        btn_exit.setIcon(icon_exit)
+        btn_exit.resize(30, 30)
+        btn_exit.move(230, 0)
+        btn_exit.clicked.connect(self.exit)
+
+        btn_subtract = QPushButton(self)
+        icon_subtract = QIcon("static/pictrue/subtract-line.png")
+        btn_subtract.setIcon(icon_subtract)
+        btn_subtract.resize(30, 30)
+        btn_subtract.move(200, 0)
+        btn_subtract.clicked.connect(self.minSubtract)
+
         # 登录错误按钮对话框
         self.dialog = QDialog()
         label1 = QLabel(self.dialog)
@@ -92,3 +112,30 @@ class LoginGui(QDialog):
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         sys.exit()
 
+    def exit(self):
+        sys.exit()
+
+    def minSubtract(self):
+        self.showMinimized()
+
+    def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
+        self.orign_x = self.pos().x()
+        self.orign_y = self.pos().y()
+        self.mouse_x = a0.globalX()
+        self.mouse_y = a0.globalY()
+        # print(self.mouse_x, self.mouse_y)
+        self.flag_move = True
+
+    def mouseMoveEvent(self, a0: QtGui.QMouseEvent) -> None:
+        if self.flag_move:
+            # print(a0.globalX(), a0.globalY())
+            move_x = a0.globalX() - self.mouse_x
+            move_y = a0.globalY() - self.mouse_y
+            # print(move_x,move_y)
+            dest_x = self.orign_x + move_x
+            dest_y = self.orign_y + move_y
+            # print(dest_x, dest_y)
+            self.move(dest_x, dest_y)
+
+    def mouseReleaseEvent(self, a0: QtGui.QMouseEvent) -> None:
+        self.flag_move = False
